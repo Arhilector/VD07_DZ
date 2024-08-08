@@ -1,9 +1,25 @@
 {% extends "base.html" %}
 
-{% block title %}
-Home
-{% endblock %}
-
 {% block content %}
-    <h1>Добро пожаловать в матрицу!</h1>
+    <!-- Отображение сообщения об успешной регистрации -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }} mt-4">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <div class="jumbotron">
+        <h1 class="display-4">Привет, друг!</h1>
+        <p class="lead">Я приветствую тебя на официальном сайте Jaus Software Corporation</p>
+        <hr class="my-4">
+
+        <!-- Проверка, авторизован ли пользователь -->
+        {% if not current_user.is_authenticated %}
+            <a class="btn btn-primary btn-lg" href="{{ url_for('register') }}" role="button">Зарегистрироваться</a>
+        {% endif %}
+    </div>
 {% endblock %}

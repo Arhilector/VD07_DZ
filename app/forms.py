@@ -1,8 +1,9 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SubmitField  # Здесь добавляем BooleanField
-from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
-from flask_login import current_user
+from wtforms import StringField, PasswordField, BooleanField, SubmitField
+from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError, Optional
 from app.models import User
+from flask_login import current_user  # Добавляем этот импорт
+
 
 class RegistrationForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired(), Length(min=2, max=35)])
@@ -30,11 +31,10 @@ class LoginForm(FlaskForm):
 
 
 class UpdateAccountForm(FlaskForm):
-    username = StringField('Имя пользователя', validators=[DataRequired(), Length(min=2, max=35)])
+    username = StringField('Username', validators=[DataRequired(), Length(min=2, max=35)])
     email = StringField('Email', validators=[DataRequired(), Email()])
-    password = PasswordField('Новый пароль', validators=[DataRequired()])
-    confirm_password = PasswordField('Подтвердить пароль', validators=[DataRequired(), EqualTo('password')])
-    submit = SubmitField('Изменить данные')
+    password = PasswordField('New Password', validators=[Optional()])
+    submit = SubmitField('Update')
 
     def validate_username(self, username):
         if username.data != current_user.username:

@@ -37,25 +37,31 @@ def login():
             flash('Введены неверные данные')
     return render_template('login.html', form=form, title='Login')
 
+
 @app.route('/logout')
 def logout():
     logout_user()
     return redirect(url_for('home'))
 
-@app.route('/account', methods=['GET', 'POST'])
+@app.route('/account')
 @login_required
 def account():
+    return render_template('account.html')
+
+@app.route('/edit_account', methods=['GET', 'POST'])
+@login_required
+def edit_account():
     form = UpdateAccountForm()
     if form.validate_on_submit():
-        if bcrypt.check_password_hash(current_user.password, form.password.data):
-            current_user.username = form.username.data
-            current_user.email = form.email.data
-            db.session.commit()
-            flash('Ваш профиль был обновлен!', 'success')
-        else:
-            flash('Неверный текущий пароль.', 'danger')
+        current_user.username = form.username.data
+        current_user.email = form.email.data
+        if form.password.data:
+            hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
+            current_user.password = hashed_password
+        db.session.commit()
+        flash('Ваш профиль был обновлен', 'success')
         return redirect(url_for('account'))
     elif request.method == 'GET':
         form.username.data = current_user.username
         form.email.data = current_user.email
-    return render_template('account.html', title='Account', form=form)
+    return render_template('edit_account.html', form=form, title='Редактировать профиль')
